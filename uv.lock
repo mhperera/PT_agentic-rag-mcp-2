@@ -18,8 +18,10 @@ dependencies = [
     { name = "langchain-groq" },
     { name = "langchain-mcp-adapters" },
     { name = "langgraph" },
+    { name = "langsmith" },
     { name = "mysql-connector-python" },
     { name = "pandas" },
+    { name = "pip" },
     { name = "pymysql" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
@@ -34,8 +36,10 @@ requires-dist = [
     { name = "langchain-groq", specifier = ">=0.3.4" },
     { name = "langchain-mcp-adapters", specifier = ">=0.1.8" },
     { name = "langgraph", specifier = ">=0.5.0" },
+    { name = "langsmith", specifier = ">=0.4.4" },
     { name = "mysql-connector-python", specifier = ">=9.3.0" },
     { name = "pandas", specifier = ">=2.3.0" },
+    { name = "pip", specifier = ">=25.1.1" },
     { name = "pymysql", specifier = ">=1.1.1" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "pyyaml", specifier = ">=6.0.2" },
@@ -1292,6 +1296,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/15/aa/3fc3181d12b95da71f5c2537c3e3b3af6ab3a8c392ab41ebb766e0929bc6/pandas-2.3.0-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1a881bc1309f3fce34696d07b00f13335c41f5f5a8770a33b09ebe23261cfc67", size = 11966182, upload-time = "2025-06-05T03:27:47.652Z" },
     { url = "https://files.pythonhosted.org/packages/37/e7/e12f2d9b0a2c4a2cc86e2aabff7ccfd24f03e597d770abfa2acd313ee46b/pandas-2.3.0-cp313-cp313t-musllinux_1_2_aarch64.whl", hash = "sha256:e1991bbb96f4050b09b5f811253c4f3cf05ee89a589379aa36cd623f21a31d6f", size = 12547686, upload-time = "2025-06-06T00:00:26.142Z" },
     { url = "https://files.pythonhosted.org/packages/39/c2/646d2e93e0af70f4e5359d870a63584dacbc324b54d73e6b3267920ff117/pandas-2.3.0-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:bb3be958022198531eb7ec2008cfc78c5b1eed51af8600c6c5d9160d89d8d249", size = 13231847, upload-time = "2025-06-05T03:27:51.465Z" },
+]
+
+[[package]]
+name = "pip"
+version = "25.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/59/de/241caa0ca606f2ec5fe0c1f4261b0465df78d786a38da693864a116c37f4/pip-25.1.1.tar.gz", hash = "sha256:3de45d411d308d5054c2168185d8da7f9a2cd753dbac8acbfa88a8909ecd9077", size = 1940155, upload-time = "2025-05-02T15:14:02.057Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/29/a2/d40fb2460e883eca5199c62cfc2463fd261f760556ae6290f88488c362c0/pip-25.1.1-py3-none-any.whl", hash = "sha256:2913a38a2abf4ea6b64ab507bd9e967f3b53dc1ede74b01b0931e1ce548751af", size = 1825227, upload-time = "2025-05-02T15:13:59.102Z" },
 ]
 
 [[package]]

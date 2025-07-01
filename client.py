@@ -17,7 +17,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 groq_api_key = os.getenv("GROQ_API_KEY")
 if groq_api_key:
     os.environ["GROQ_API_KEY"] = groq_api_key
@@ -25,6 +24,14 @@ if groq_api_key:
 cohere_api_key = os.getenv("COHERE_API_KEY")
 if cohere_api_key:
     os.environ["COHERE_API_KEY"] = cohere_api_key
+
+langchain_api_key = os.getenv("LANGCHAIN_API_KEY")
+if langchain_api_key:
+    os.environ["LANGCHAIN_API_KEY"] = langchain_api_key
+
+langchain_tracing_v2 = os.getenv("LANGCHAIN_TRACING_V2")
+if langchain_tracing_v2:
+    os.environ["LANGCHAIN_TRACING_V2"] = langchain_tracing_v2
 
 
 def bootstrap():
@@ -39,13 +46,13 @@ def bootstrap():
     try:
         print("\n🕞 Bootstrapping...")
         init_db_engine(pool_size=10, max_overflow=10)
-        
+
         init_vector_db(
             file_paths=[
                 "config/table_descriptions.yaml",
             ],
             cohere_api_key=cohere_api_key,
-            output_file="table_descriptions"
+            output_file="table_descriptions",
         )
         init_vector_db(
             file_paths=[
@@ -79,6 +86,7 @@ async def main():
     # llm = ChatGroq(model="llama-3.3-70b-versatile")
 
     llm_with_tools = llm.bind_tools(tools)
+
     class State(TypedDict):
         messages: Annotated[list, add_messages]
 
