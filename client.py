@@ -11,7 +11,7 @@ from langgraph.prebuilt import tools_condition
 import os
 import asyncio
 from core.tool_loader import load_tool_config
-from core.db_connector import init_db_engine
+from core.db_connector import init_db_engine, get_db_schema
 from core.vector_db import init_vector_db
 from dotenv import load_dotenv
 
@@ -21,6 +21,7 @@ load_dotenv()
 groq_api_key = os.getenv("GROQ_API_KEY")
 if groq_api_key:
     os.environ["GROQ_API_KEY"] = groq_api_key
+
 cohere_api_key = os.getenv("COHERE_API_KEY")
 if cohere_api_key:
     os.environ["COHERE_API_KEY"] = cohere_api_key
@@ -29,8 +30,10 @@ if cohere_api_key:
 def bootstrap():
     """
     Initialize all resources needed before starting the RAG app.
-    - Initialize DB connection pool
-    - Load schemas or metadata if needed
+    - Initialize DB connection
+    - Load schemas
+    - Load metadata
+    if needed
     """
 
     try:
@@ -46,13 +49,10 @@ def bootstrap():
             cohere_api_key=cohere_api_key,
             output_file_name="combined_embeddings",
         )
+        get_db_schema()
         print("✅ Bootstrap complete.")
     except Exception as e:
         print("❌ Exception:", e)
-
-    # Optional: load schema info here and cache it for tools or LLM prompt context
-    # schemas = load_schemas()
-    # return schemas
 
 
 async def main():
