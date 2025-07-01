@@ -1,0 +1,30 @@
+Title: Solar Energy Overview
+
+Solar energy is the energy that is harnessed from the sun’s radiation. It is a renewable and sustainable source of power. Photovoltaic (PV) systems convert sunlight directly into electricity using solar panels. Another common method is Concentrated Solar Power (CSP), which uses mirrors or lenses to focus sunlight into a small area to produce heat, which then generates electricity.
+
+Benefits:
+- Reduces electricity bills
+- Low environmental impact
+- Low maintenance costs
+- Energy independence
+
+Limitations:
+- Weather dependent
+- High initial cost
+- Energy storage required for nighttime use
+
+Applications:
+1. Residential solar panel systems
+2. Solar farms for grid power
+3. Solar-powered street lights
+4. Remote telecommunications
+5. Water heating and purification
+
+Future:
+Advancements in solar cell efficiency and battery storage are making solar more viable. Bifacial solar panels, solar paint, and integration into building materials are areas of active development.
+
+Key Terms:
+- Photovoltaic (PV)
+- Net Metering
+- Solar Inverter
+- Kilowatt-hour (kWh)

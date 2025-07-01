@@ -19,7 +19,7 @@ def query_database(query: str) -> list:
 
     try:
         session = get_session()
-        result = session.execute(text(query))
+        result = session.execute(text(query.query))
         rows = result.mappings().all()
         return rows
     except Exception as e:

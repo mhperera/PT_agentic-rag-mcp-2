@@ -11,3 +11,7 @@ weather:
 sql:
   transport: streamable_http
   url: http://localhost:8001/mcp
+
+vector_search:
+  transport: streamable_http
+  url: http://localhost:8002/mcp
