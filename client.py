@@ -40,14 +40,12 @@ def bootstrap():
         print("\n🕞 Bootstrapping...")
         init_db_engine(pool_size=10, max_overflow=10)
         init_vector_db(
-            file_paths=["config/table_descriptions.yaml"],
+            file_paths=[
+                "config/table_descriptions.yaml",
+                "resources/data.csv",
+                "resources/data.txt",
+            ],
             cohere_api_key=cohere_api_key,
-            output_file_name="table_descriptions",
-        )
-        init_vector_db(
-            file_paths=["resources/data.csv", "resources/data.txt"],
-            cohere_api_key=cohere_api_key,
-            output_file_name="combined_embeddings",
         )
         get_db_schema()
         print("✅ Bootstrap complete.")
@@ -57,6 +55,7 @@ def bootstrap():
 
 async def main():
     bootstrap()
+
     tool_config = load_tool_config("config/tool_registry.yaml")
     client = MultiServerMCPClient(tool_config)
     tools = await client.get_tools()
