@@ -39,16 +39,23 @@ def bootstrap():
     try:
         print("\n🕞 Bootstrapping...")
         init_db_engine(pool_size=10, max_overflow=10)
+        
         init_vector_db(
             file_paths=[
                 "config/table_descriptions.yaml",
+            ],
+            cohere_api_key=cohere_api_key,
+            output_file="table_descriptions"
+        )
+        init_vector_db(
+            file_paths=[
                 "resources/data.csv",
                 "resources/data.txt",
             ],
             cohere_api_key=cohere_api_key,
         )
         get_db_schema()
-        print("✅ Bootstrap complete.")
+        print("✅ Bootstrap successfully completed.")
     except Exception as e:
         print("❌ Exception:", e)
 
@@ -72,8 +79,6 @@ async def main():
     # llm = ChatGroq(model="llama-3.3-70b-versatile")
 
     llm_with_tools = llm.bind_tools(tools)
-
-    ## Define Graph State
     class State(TypedDict):
         messages: Annotated[list, add_messages]
 
@@ -94,7 +99,7 @@ async def main():
     try:
         while True:
 
-            question = input("\n\nHuman : ").strip()
+            question = input("\n\n👩 Human : ").strip()
             if question.lower() == "exit" or question.lower() == "quit":
                 print("Exiting...")
                 break
@@ -102,7 +107,7 @@ async def main():
             response = await agent.ainvoke(
                 {"messages": [{"role": "user", "content": question}]}
             )
-            print("\n✅ Response:\n" + response["messages"][-1].content)
+            print("\n🤖 AI :" + response["messages"][-1].content)
     except Exception as e:
         print("\n❌ Agent invocation failed: ", e)
 

@@ -7,6 +7,17 @@ mcp = FastMCP("SQL Server")
 
 
 @mcp.tool(
+    name="generate_sql_query",
+    description="Given a user question, table description and the database schema, return a safe SQL SELECT query to answer it.",
+)
+def generate_sql_query(question: str, schema: str) -> str:
+    """ "
+    The LLM uses this tool to convert a user question into a SQL SELECT query.
+    """
+    return f"-- Generate a SQL query using schema:\n{schema}\n-- Question: {question}"
+
+
+@mcp.tool(
     name="query_database",
     description="Run SQL SELECT queries on the customer database. Only SELECT allowed.",
 )

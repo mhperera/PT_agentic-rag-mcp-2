@@ -7,7 +7,7 @@ from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
-def init_vector_db(file_paths: list[str], cohere_api_key: str):
+def init_vector_db(file_paths: list[str], cohere_api_key: str, output_file: str = None):
     try:
         print("- 🕞 Creating a single combined FAISS Vector DB from multiple files...")
 
@@ -35,6 +35,10 @@ def init_vector_db(file_paths: list[str], cohere_api_key: str):
         vectorstore = FAISS.from_documents(splits, embeddings)
 
         output_path = f"vector_db"
+
+        if output_file: 
+            output_path += "/" + output_file
+
         vectorstore.save_local(output_path)
 
         print(f"- ✅ Single combined FAISS vector DB created at: {output_path}")
