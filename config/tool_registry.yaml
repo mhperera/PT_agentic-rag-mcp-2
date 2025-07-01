@@ -1,0 +1,13 @@
+math:
+  transport: stdio
+  command: python
+  args:
+    - servers/math.py
+
+weather:
+  transport: streamable_http
+  url: http://localhost:8000/mcp
+
+sql:
+  transport: streamable_http
+  url: http://localhost:8001/mcp
