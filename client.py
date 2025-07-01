@@ -44,7 +44,7 @@ async def main():
     print("\n📚 Discovered tools:")
     for tool in tools:
         print("-", getattr(tool, "name", repr(tool)))
-        
+
     if not tools:
         raise RuntimeError("No tools discovered. Check MCP servers and tool config.")
 
@@ -53,14 +53,24 @@ async def main():
     llm = ChatGroq(model="llama-3.3-70b-versatile")
     agent = create_react_agent(llm, tools)
 
-
+    print("\n##### RAG APPLICATION #####")
+    print("\nEnter your question (or 'exit' to quit)")
+    
     try:
-        response = await agent.ainvoke(
-            {"messages": [{"role": "user", "content": "Who are the customers from Canada?"}]}
-        )
-        print("\n✅ SQL response:\n\n" + response["messages"][-1].content)
+        while True:
+            
+            question = input("\n\nHuman : ").strip()
+            if question.lower() == "exit" or question.lower() == "quit":
+                print("Exiting...")
+                break
+
+            response = await agent.ainvoke(
+                {"messages": [{"role": "user", "content": question}]}
+            )
+            print("\n✅ Response:\n" + response["messages"][-1].content)
     except Exception as e:
         print("\n❌ Agent invocation failed", e)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
