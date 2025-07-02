@@ -15,8 +15,11 @@ dependencies = [
     "mysql-connector-python>=9.3.0",
     "pandas>=2.3.0",
     "pip>=25.1.1",
+    "pyfiglet>=1.0.3",
     "pymysql>=1.1.1",
     "python-dotenv>=1.1.1",
     "pyyaml>=6.0.2",
+    "rich>=14.0.0",
     "sqlalchemy>=2.0.41",
+    "yaspin>=3.1.0",
 ]

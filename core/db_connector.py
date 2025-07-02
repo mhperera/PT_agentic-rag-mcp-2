@@ -16,8 +16,6 @@ def init_db_engine(pool_size=5, max_overflow=10):
 
     if _engine is None:
         try:
-            print("- 🕞 Creating SQLAlchemy DB engine...")
-            
             user = os.getenv("DB_USER", "").strip()
             password = os.getenv("DB_PASSWORD", "").strip()
             host = os.getenv("DB_HOST", "").strip()
@@ -41,7 +39,6 @@ def init_db_engine(pool_size=5, max_overflow=10):
             _session = scoped_session(
                 sessionmaker(bind=_engine, autoflush=False, autocommit=False)
             )
-            print("- ✅ SQLAlchemy engine initialized successfully.")
 
         except SQLAlchemyError as e:
             print("- ❌ SQLAlchemy initialization failed:", e)
@@ -53,13 +50,12 @@ def get_session():
         init_db_engine()
     return _session()
 
+
 def get_db_schema():
     if _engine is None:
         init_db_engine()
 
     try:
-        print("- 🕞 Getting DB Schema...")
-
         inspector = inspect(_engine)
         schema = {}
 
@@ -75,11 +71,8 @@ def get_db_schema():
                     "primary_key": col.get("primary_key", False),
                 }
                 schema[table_name].append(col_info)
-        print("- ✅ DB Schema Extracted successfully.")
         return schema
 
     except SQLAlchemyError as e:
-            print("- ❌ DB Schema extraction failed:", e)
-            raise
-
-    
+        print("- ❌ DB Schema extraction failed:", e)
+        raise

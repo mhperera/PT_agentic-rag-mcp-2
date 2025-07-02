@@ -9,8 +9,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def init_vector_db(file_paths: list[str], cohere_api_key: str, output_file: str = None):
     try:
-        print("- 🕞 Creating a single combined FAISS Vector DB from multiple files...")
-
         documents = []
 
         for file_path in file_paths:
@@ -36,12 +34,10 @@ def init_vector_db(file_paths: list[str], cohere_api_key: str, output_file: str 
 
         output_path = f"vector_db"
 
-        if output_file: 
+        if output_file:
             output_path += "/" + output_file
 
         vectorstore.save_local(output_path)
-
-        print(f"- ✅ Single combined FAISS vector DB created at: {output_path}")
 
     except Exception as e:
         print("- ❌ Vector DB creation failed:", e)

@@ -1,6 +1,7 @@
-def main():
-    print("Hello from agentic-rag-mcp-2!")
-
+from bootstrap import bootstrap
+from app.rag_client import rag_cli
+import asyncio
 
 if __name__ == "__main__":
-    main()
+    bootstrap()
+    asyncio.run(rag_cli())

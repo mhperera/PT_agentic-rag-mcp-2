@@ -1,17 +1,17 @@
-math_search:
+math:
   transport: stdio
   command: python
   args:
-    - servers/math_search.py
+    - mcp_servers/math.py
 
-weather_search:
+weather:
   transport: streamable_http
   url: http://localhost:8000/mcp
 
-sql_search:
+sql:
   transport: streamable_http
   url: http://localhost:8001/mcp
 
-vector_search:
+vector:
   transport: streamable_http
   url: http://localhost:8002/mcp

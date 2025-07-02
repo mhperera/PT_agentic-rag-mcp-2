@@ -12,7 +12,7 @@ cohere_api_key = os.getenv("COHERE_API_KEY")
 if cohere_api_key:
     os.environ["COHERE_API_KEY"] = cohere_api_key
 
-mcp = FastMCP("Vector Search Server")
+mcp = FastMCP("Vector Server")
 
 embeddings = CohereEmbeddings(
     cohere_api_key=cohere_api_key, model="embed-english-light-v3.0"
@@ -25,7 +25,7 @@ vectorstore = FAISS.load_local(
 )
 
 vectorstore_tables = FAISS.load_local(
-    VECTOR_STORE_PATH + "/table_descriptions",
+    VECTOR_STORE_PATH + "/table_info",
     embeddings,
     allow_dangerous_deserialization=True,
 )
