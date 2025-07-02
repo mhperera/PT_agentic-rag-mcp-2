@@ -6,7 +6,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 
 from core.enums.ToolName import ToolName
 from core.db_connector import get_db_schema
-
+from core.enums.ClassifierLabel import ClassifierLabel
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -91,8 +91,8 @@ def build_agents(llm_with_tools, tools, tool_map) -> dict:
         return graph.compile()
 
     return {
-        "db_agent": build_db_search_graph(),
-        "vector_agent": build_vector_search_graph(),
-        "llm_agent": build_general_llm_graph(),
-        "other_tool_agent": build_other_tool_graph(),
+        f"{ClassifierLabel.DB_SEARCH.value}_agent": build_db_search_graph(),
+        f"{ClassifierLabel.VECTOR_SEARCH.value}_agent": build_vector_search_graph(),
+        f"{ClassifierLabel.GENERAL_LLM.value}_agent": build_general_llm_graph(),
+        f"{ClassifierLabel.OTHER_TOOL.value}_agent": build_other_tool_graph(),
     }

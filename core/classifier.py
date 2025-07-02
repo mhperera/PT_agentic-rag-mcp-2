@@ -1,5 +1,5 @@
 from core.prompts.classifiers import get_classify_intent_prompt
-from core.enums.IntentLabel import IntentLabel
+from core.enums.ClassifierLabel import ClassifierLabel
 import re
 
 
@@ -13,13 +13,13 @@ async def question_classifier(llm, question: str) -> str:
         r"<think>.*?</think>", "", response.content.strip().lower(), flags=re.DOTALL
     )
 
-    if IntentLabel.DB_SEARCH.value in label:
-        return IntentLabel.DB_SEARCH.value
-    elif IntentLabel.VECTOR_SEARCH.value in label:
-        return IntentLabel.VECTOR_SEARCH.value
-    elif IntentLabel.INTERNET_SEARCH.value in label:
-        return IntentLabel.INTERNET_SEARCH.value
-    elif IntentLabel.OTHER_TOOL.value in label:
-        return IntentLabel.OTHER_TOOL.value
+    if ClassifierLabel.DB_SEARCH.value in label:
+        return ClassifierLabel.DB_SEARCH.value
+    elif ClassifierLabel.VECTOR_SEARCH.value in label:
+        return ClassifierLabel.VECTOR_SEARCH.value
+    elif ClassifierLabel.INTERNET_SEARCH.value in label:
+        return ClassifierLabel.INTERNET_SEARCH.value
+    elif ClassifierLabel.OTHER_TOOL.value in label:
+        return ClassifierLabel.OTHER_TOOL.value
     else:
-        return IntentLabel.GENERAL_LLM.value
+        return ClassifierLabel.GENERAL_LLM.value

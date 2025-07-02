@@ -1,6 +1,6 @@
 from enum import Enum
 
-class IntentLabel(Enum):
+class ClassifierLabel(Enum):
     DB_SEARCH = "db_search"
     VECTOR_SEARCH = "vector_search"
     INTERNET_SEARCH = "internet_search"

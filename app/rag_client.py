@@ -7,6 +7,7 @@ from rich import print
 from core.tool_loader import load_tool_config
 from core.classifier import question_classifier
 from core.agent_factory import build_agents
+from core.enums.ClassifierLabel import ClassifierLabel
 
 f = Figlet(font="banner")
 
@@ -41,8 +42,12 @@ async def rag_cli():
             break
 
         classifier = await question_classifier(llm, question)
-        print("\nSelected classifier ::: ", classifier)
-        agent = agents.get(f"{classifier}_agent", agents["llm_agent"])
+
+        print("\nSelected Classifier ::: ", classifier)
+
+        agent = agents.get(
+            f"{classifier}_agent", f"{ClassifierLabel.OTHER_TOOL.value}_agent"
+        )
 
         response = await agent.ainvoke(
             {"messages": [{"role": "user", "content": question}]}
