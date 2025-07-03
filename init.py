@@ -28,13 +28,11 @@ llm = ChatGroq(model="llama-3.3-70b-versatile")
 # embedding_model = CohereEmbeddings(
 #     cohere_api_key=COHERE_API_KEY, model="embed-english-light-v3.0"
 # )
-
 # embedding_model = OpenAIEmbeddings(
 #     model="text-embedding-3-small",
 #     # model="text-embedding-ada-002",
 #     chunk_size=1000
 # )
-
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001",
 )

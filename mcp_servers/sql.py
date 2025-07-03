@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 from langchain.prompts import ChatPromptTemplate
-from core.db_connector import get_session, get_engine
+from core.db_connector import get_session
 import traceback
 from sqlalchemy import text
 from langchain_core.output_parsers import StrOutputParser
@@ -51,27 +51,6 @@ def execute_sql_query(sql_query: str) -> list:
         traceback.print_exc()
     finally:
         session.close()
-
-
-@mcp.tool(
-    name="rephrase_sql_result",
-    description="Rephrase raw SQL output into human-readable answer.",
-)
-async def rephrase_sql_result(question: str, db_result: str) -> str:
-    try:
-        prompt = ChatPromptTemplate.from_template(
-            """
-            You are an assistant summarizing llm results for the end users.\n
-            User Question:{question}\n
-            Raw Data:{db_result}\n
-            Final Answer:
-        """
-        )
-        chain = prompt | llm | parser
-        return await chain.ainvoke({"question": question, "db_result": db_result})
-    except Exception as e:
-        print("❌ Query execution error:", e)
-        traceback.print_exc()
 
 
 if __name__ == "__main__":

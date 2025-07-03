@@ -37,7 +37,7 @@ def build_agents(tools_map) -> dict:
             messages: Annotated[list, add_messages]
             schema: str
             sql_query: str
-            db_result: str
+            result: str
 
         # Node: This Tool Node will call execute_sql_query tool
         async def node_generate_sql_query(state: State):
@@ -55,34 +55,30 @@ def build_agents(tools_map) -> dict:
         async def node_execute_sql_query(state: State):
             sql_query = state["sql_query"]
             tool = tools_map[ToolName.EXECUTE_SQL_QUERY.value]
-            db_result = await tool.ainvoke({"sql_query": sql_query})
-            return {"db_result": db_result, "messages": state["messages"]}
+            result = await tool.ainvoke({"sql_query": sql_query})
+            return {"result": result, "messages": state["messages"]}
 
-        # Node: This Tool Node will call rephrase_sql_result tool
-        async def node_rephrase_sql_result(state: State):
+        async def node_rephrase_result(state: State):
             question = state["messages"][-1].content
-            db_result = state["db_result"]
-            tool = tools_map[ToolName.REPHRASE_SQL_RESULT.value]
-            final_answer = await tool.ainvoke(
-                {"question": question, "db_result": db_result}
-            )
+            result = state["result"]
+            tool = tools_map[ToolName.REPHRASE_RESULT.value]
+            final_answer = await tool.ainvoke({"question": question, "result": result})
             new_messages = state["messages"] + [AIMessage(content=final_answer)]
             return {"messages": new_messages}
 
         graph = StateGraph(State)
         graph.add_node("generate_sql_query", node_generate_sql_query)
         graph.add_node("execute_sql_query", node_execute_sql_query)
-        graph.add_node("rephrase_sql_result", node_rephrase_sql_result)
+        graph.add_node("rephrase_result", node_rephrase_result)
         graph.set_entry_point("generate_sql_query")
         graph.add_edge("generate_sql_query", "execute_sql_query")
-        graph.add_edge("execute_sql_query", "rephrase_sql_result")
-        graph.set_finish_point("rephrase_sql_result")
+        graph.add_edge("execute_sql_query", "rephrase_result")
+        graph.set_finish_point("rephrase_result")
         return graph.compile()
 
     def other_tool_graph():
         class State(TypedDict):
             messages: Annotated[list, add_messages]
-            result: str
 
         tools = [
             tools_map[ToolName.MATH_ADD.value],
@@ -98,9 +94,10 @@ def build_agents(tools_map) -> dict:
 
         async def node_rephrase_result(state: State):
             question = state["messages"][-1].content
-            result = state["messages"][-1].content
             tool = tools_map[ToolName.REPHRASE_RESULT.value]
-            final_answer = await tool.ainvoke({"question": question, "result": result})
+            final_answer = await tool.ainvoke(
+                {"question": question, "result": question}
+            )
             new_messages = state["messages"] + [AIMessage(content=final_answer)]
             return {"messages": new_messages}
 
@@ -111,6 +108,7 @@ def build_agents(tools_map) -> dict:
         graph.set_entry_point("prepare_question")
         graph.add_conditional_edges("prepare_question", tools_condition)
         graph.add_conditional_edges("tools", tools_condition)
+        graph.add_edge("tools", "rephrase_result")
         graph.set_finish_point("rephrase_result")
         return graph.compile()
 
