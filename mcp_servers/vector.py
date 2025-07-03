@@ -1,8 +1,9 @@
 from fastmcp import FastMCP
 from langchain_community.vectorstores import FAISS
-from langchain_cohere import CohereEmbeddings
 from dotenv import load_dotenv
 import os
+
+from init import embedding_model
 
 load_dotenv()
 
@@ -14,19 +15,15 @@ if cohere_api_key:
 
 mcp = FastMCP("Vector Server")
 
-embeddings = CohereEmbeddings(
-    cohere_api_key=cohere_api_key, model="embed-english-light-v3.0"
-)
-
 vectorstore = FAISS.load_local(
     VECTOR_STORE_PATH,
-    embeddings,
+    embedding_model,
     allow_dangerous_deserialization=True,
 )
 
 vectorstore_tables = FAISS.load_local(
     VECTOR_STORE_PATH + "/table_info",
-    embeddings,
+    embedding_model,
     allow_dangerous_deserialization=True,
 )
 

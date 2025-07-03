@@ -3,7 +3,7 @@ import subprocess
 servers = [
     ("Math", "uv run mcp_servers/math.py"),
     ("SQL", "python -m mcp_servers.sql"),
-    ("Vector", "uv run mcp_servers/vector.py"),
+    ("Vector", "python -m mcp_servers.vector"),
     ("Weather", "uv run mcp_servers/weather.py"),
 ]
 

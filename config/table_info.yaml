@@ -1,34 +1,23 @@
-[
-  {
-    "table_name": "customers",
-    "description": "Stores customer information including name, credit limits, contact and address details.",
-  },
-  {
-    "table_name": "employees",
-    "description": "Stores information about company employees, including reporting hierarchy.",
-  },
-  {
-    "table_name": "offices",
-    "description": "Stores office location and contact details.",
-  },
-  {
-    "table_name": "orders",
-    "description": "Contains customer orders including order status and dates.",
-  },
-  {
-    "table_name": "orderdetails",
-    "description": "Stores the details of each order including products and quantities.",
-  },
-  {
-    "table_name": "payments",
-    "description": "Records customer payments, including payment date and amount.",
-  },
-  {
-    "table_name": "products",
-    "description": "Stores product data such as name, scale, vendor, and pricing.",
-  },
-  {
-    "table_name": "productlines",
-    "description": "Stores product line categories and associated text descriptions.",
-  },
-]
+- table_name: customers
+  description: Stores customer information including name, credit limits, contact and address details.
+
+- table_name: employees
+  description: Stores information about company employees, including reporting hierarchy.
+
+- table_name: offices
+  description: Stores office location and contact details.
+
+- table_name: orders
+  description: Contains customer orders including order status and dates.
+
+- table_name: orderdetails
+  description: Stores the details of each order including products and quantities.
+
+- table_name: payments
+  description: Records customer payments, including payment date and amount.
+
+- table_name: products
+  description: Stores product data such as name, scale, vendor, and pricing.
+
+- table_name: productlines
+  description: Stores product line categories and associated text descriptions.

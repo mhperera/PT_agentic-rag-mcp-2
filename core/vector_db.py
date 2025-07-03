@@ -1,47 +1,7 @@
 import yaml
 import csv
 import os
-from langchain_community.vectorstores import FAISS
-from langchain_cohere import CohereEmbeddings
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-
-def init_vector_db(file_paths: list[str], cohere_api_key: str, output_file: str = None):
-    try:
-        documents = []
-
-        for file_path in file_paths:
-            ext = os.path.splitext(file_path)[-1].lower()
-
-            if ext in [".yaml", ".yml"]:
-                documents.extend(read_yaml_file(file_path))
-            elif ext == ".csv":
-                documents.extend(read_csv_file(file_path))
-            elif ext == ".txt":
-                documents.extend(read_txt_file(file_path))
-            else:
-                print(f"- ⚠️ Unsupported file type: {file_path}")
-                continue
-
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-        splits = text_splitter.split_documents(documents)
-
-        embeddings = CohereEmbeddings(
-            cohere_api_key=cohere_api_key, model="embed-english-light-v3.0"
-        )
-        vectorstore = FAISS.from_documents(splits, embeddings)
-
-        output_path = f"vector_db"
-
-        if output_file:
-            output_path += "/" + output_file
-
-        vectorstore.save_local(output_path)
-
-    except Exception as e:
-        print("- ❌ Vector DB creation failed:", e)
-        raise
 
 
 def read_yaml_file(file_path: str) -> list[Document]:

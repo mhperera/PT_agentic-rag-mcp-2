@@ -1,25 +1,13 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from langchain_groq import ChatGroq
-from langchain_cohere import ChatCohere
-
 from pyfiglet import Figlet
 from rich import print
+
+from core.enums.ClassifierLabel import ClassifierLabel
 from core.tool_loader import load_tool_config
 from core.classifier import question_classifier
 from core.agent_factory import build_agents
-from core.enums.ClassifierLabel import ClassifierLabel
 
 f = Figlet(font="banner")
-
-llm = ChatGroq(model="qwen-qwq-32b")
-# llm = ChatGroq(model="llama3-8b-8192")
-# llm = ChatGroq(model="llama-3.3-70b-versatile")
-# llm = ChatGroq(model="mistral-saba-24b")
-# llm = ChatCohere(
-#     model_name="xlarge",
-#     temperature=0.5,
-#     max_tokens=512,
-# )
 
 
 async def rag_cli():
@@ -30,8 +18,7 @@ async def rag_cli():
     client = MultiServerMCPClient(tool_config)
     tools = await client.get_tools()
     tool_map = {getattr(t, "name", f"unnamed_{i}"): t for i, t in enumerate(tools)}
-    llm_with_tools = llm.bind_tools(tools)
-    agents = build_agents(llm_with_tools, tools, tool_map)
+    agents = build_agents(tools, tool_map)
 
     print("\nType your question (or 'exit'):\n")
 
@@ -41,7 +28,7 @@ async def rag_cli():
             print("[green]Exiting...[/green]")
             break
 
-        classifier = await question_classifier(llm, question)
+        classifier = await question_classifier(question)
 
         print("\nSelected Classifier ::: ", classifier)
 

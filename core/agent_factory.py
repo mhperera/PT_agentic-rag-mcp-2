@@ -7,12 +7,16 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from core.enums.ToolName import ToolName
 from core.db_connector import get_db_schema
 from core.enums.ClassifierLabel import ClassifierLabel
+from init import llm
+
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-def build_agents(llm_with_tools, tools, tool_map) -> dict:
+def build_agents(tools, tool_map) -> dict:
+
+    llm_with_tools = llm.bind_tools(tools)
 
     # Node: Call vector_table_search : Dynamic table description selection
     async def node_vector_table_search(state: State):
@@ -61,10 +65,7 @@ def build_agents(llm_with_tools, tools, tool_map) -> dict:
     def build_vector_search_graph():
         graph = StateGraph(State)
         graph.add_node("node_default_tool_call_llm", node_default_tool_call_llm)
-        graph.add_node(
-            "vector_knowledge_search",
-            ToolNode([tool_map[ToolName.VECTOR_KNOWLEDGE_SEARCH.value]]),
-        )
+        graph.add_node("vector_knowledge_search",ToolNode([tool_map[ToolName.VECTOR_KNOWLEDGE_SEARCH.value]]),)
         graph.set_entry_point("vector_knowledge_search")
         graph.add_edge("vector_knowledge_search", "node_default_tool_call_llm")
         graph.set_finish_point("node_default_tool_call_llm")

@@ -1,4 +1,4 @@
-from bootstrap import bootstrap
+from init import bootstrap
 from app.rag_client import rag_cli
 import asyncio
 
