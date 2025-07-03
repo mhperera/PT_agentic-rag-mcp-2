@@ -15,3 +15,7 @@ sql:
 vector:
   transport: streamable_http
   url: http://localhost:8002/mcp
+
+rephrase:
+  transport: streamable_http
+  url: http://localhost:8003/mcp

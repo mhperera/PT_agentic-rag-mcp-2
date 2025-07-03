@@ -6,6 +6,7 @@ from core.enums.ClassifierLabel import ClassifierLabel
 from core.tool_loader import load_tool_config
 from core.classifier import question_classifier
 from core.agent_factory import build_agents
+from core.enums.ToolName import ToolName
 
 f = Figlet(font="banner")
 
@@ -16,9 +17,10 @@ async def rag_cli():
 
     tool_config = load_tool_config("config/tool_config.yaml")
     client = MultiServerMCPClient(tool_config)
+    
     tools = await client.get_tools()
     tools_map = {getattr(t, "name", f"unnamed_{i}"): t for i, t in enumerate(tools)}
-    agents = build_agents(tools_map)
+    agents = build_agents(tools_map, tools)
 
     print("\nType your question (or 'exit'):\n")
 

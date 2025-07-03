@@ -12,3 +12,5 @@ class ToolName(Enum):
 
     VECTOR_KNOWLEDGE_SEARCH = "vector_knowledge_search"
     VECTOR_TABLE_SEARCH = "vector_table_search"
+
+    REPHRASE_RESULT = "rephrase_result"

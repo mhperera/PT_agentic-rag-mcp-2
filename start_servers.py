@@ -5,6 +5,7 @@ servers = [
     ("SQL", "python -m mcp_servers.sql"),
     ("Vector", "python -m mcp_servers.vector"),
     ("Weather", "uv run mcp_servers/weather.py"),
+    ("Rephrase", "python -m mcp_servers.rephrase"),
 ]
 
 print(f"🚀 Starting all MCP servers...")

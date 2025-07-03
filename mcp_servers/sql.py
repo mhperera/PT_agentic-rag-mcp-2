@@ -3,12 +3,7 @@ from langchain.prompts import ChatPromptTemplate
 from core.db_connector import get_session, get_engine
 import traceback
 from sqlalchemy import text
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from core.prompts.generate_sql_query import generate_prompt as generate_prompt_query
-from core.prompts.generate_sql_execution import (
-    generate_prompt as generate_prompt_execution,
-)
 from init import llm
 
 parser = StrOutputParser()

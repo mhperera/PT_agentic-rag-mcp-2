@@ -85,11 +85,11 @@ async def question_classifier(question: str) -> str:
 
     if ClassifierLabel.DB_SEARCH.value in label:
         return ClassifierLabel.DB_SEARCH.value
+    elif ClassifierLabel.OTHER_TOOL.value in label:
+        return ClassifierLabel.OTHER_TOOL.value
     # elif ClassifierLabel.VECTOR_SEARCH.value in label:
     #     return ClassifierLabel.VECTOR_SEARCH.value
     # elif ClassifierLabel.INTERNET_SEARCH.value in label:
     #     return ClassifierLabel.INTERNET_SEARCH.value
-    # elif ClassifierLabel.OTHER_TOOL.value in label:
-    #     return ClassifierLabel.OTHER_TOOL.value
     else:
         return ClassifierLabel.GENERAL_LLM.value
