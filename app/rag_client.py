@@ -32,7 +32,7 @@ async def rag_cli():
 
         classifier = await question_classifier(question)
 
-        print("\nSelected Classifier ::: ", classifier)
+        # print("\nSelected Classifier ::: ", classifier)
 
         agent = agents.get(
             f"{classifier}_agent", f"{ClassifierLabel.GENERAL_LLM.value}_agent"

@@ -54,13 +54,11 @@ def vector_table_search(query: str, top_k: int = 5) -> list:
             allow_dangerous_deserialization=True,
         )
         res = vs.similarity_search(query, k=3)
-        print("Search Results :::: ", res)
         return [doc.page_content for doc in res]
 
         # results = vectorstore_tables.similarity_search(query, k=top_k)
         # return [doc.page_content for doc in results]
     except Exception as e:
-        print("ERROR:", str(e))
         traceback.print_exc()
         return [f"❌ Error during vector table search: {str(e)}"]
         # return [f"❌ Error during vector table search: {str(e)}"]
