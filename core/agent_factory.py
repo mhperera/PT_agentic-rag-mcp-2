@@ -21,7 +21,7 @@ class State(TypedDict):
 def build_agents(tools_map) -> dict:
 
     # Node: This Tool Node will call execute_sql_query tool
-    async def generate_sql_query(state: State):
+    async def node_generate_sql_query(state: State):
         schema = get_db_schema_as_ddl()
         question = state["messages"][-1].content
         tool = tools_map[ToolName.GENERATE_SQL_QUERY.value]
