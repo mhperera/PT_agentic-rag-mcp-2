@@ -10,7 +10,7 @@ servers = [
 print(f"🚀 Starting all MCP servers...")
 
 for name, cmd in servers:
-    print(f" - 🚀 Starting {name} Server...")
+    print(f" - Starting {name} Server...")
     subprocess.Popen(cmd, shell=True)
 
 print(f"✅ Started all servers.")

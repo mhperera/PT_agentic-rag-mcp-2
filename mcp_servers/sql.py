@@ -1,7 +1,17 @@
 from fastmcp import FastMCP
-from core.db_connector import get_session
+from langchain.prompts import ChatPromptTemplate
+from core.db_connector import get_session, get_engine
 import traceback
 from sqlalchemy import text
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from core.prompts.generate_sql_query import generate_prompt as generate_prompt_query
+from core.prompts.generate_sql_execution import (
+    generate_prompt as generate_prompt_execution,
+)
+from init import llm
+
+parser = StrOutputParser()
 
 mcp = FastMCP("SQL Server")
 
@@ -10,34 +20,63 @@ mcp = FastMCP("SQL Server")
     name="generate_sql_query",
     description="Given a user question, table description and the database schema, return a safe SQL SELECT query to answer it.",
 )
-def generate_sql_query(question: str, schema: str) -> str:
+async def generate_sql_query_(schema: str, question: str) -> str:
     """ "
-    The LLM uses this tool to convert a user question into a SQL SELECT query.
+    The LLM uses this tool to Generate SQL SELECT query based on the provided database schema and user question.
     """
-    return f"-- Generate a SQL query using schema:\n{schema}\n-- Question: {question}"
+    try:
+        prompt = ChatPromptTemplate.from_template(
+            """
+            You are a SQL and MySQL expert.\n 
+            Given the database schema(Database tables) and a user question, generate a safe SQL SELECT query.\n
+            Write ONLY the SQL query (no markdown, no backticks) to answer the following question.\n
+            Schema:{schema}\n
+            Question:{question}\n
+            SQL Query:
+            """
+        )
+        chain = prompt | llm | parser
+        return await chain.ainvoke({"schema": schema, "question": question})
+    except Exception as e:
+        print("❌ Query generation error:", e)
+        traceback.print_exc()
 
 
 @mcp.tool(
-    name="query_database",
-    description="Run SQL SELECT queries on the customer database. Only SELECT allowed.",
+    name="execute_sql_query",
+    description="Execute given SQL queries on the database and and returns result string",
 )
-def query_database(query: str) -> list:
-
-    print("🔥 SQL tool called with raw query param : " + query)
-
-    if not query.strip().lower().startswith("select"):
-        return ["Only SELECT queries allowed."]
-
+def execute_sql_query(sql_query: str) -> list:
     try:
         session = get_session()
-        result = session.execute(text(query.query))
-        rows = result.mappings().all()
-        return rows
+        result = session.execute(text(sql_query)).fetchall()
+        return str(result)
     except Exception as e:
         print("❌ Query execution error:", e)
         traceback.print_exc()
     finally:
         session.close()
+
+
+@mcp.tool(
+    name="rephrase_sql_result",
+    description="Rephrase raw SQL output into human-readable answer.",
+)
+async def rephrase_sql_result(question: str, db_result: str) -> str:
+    try:
+        prompt = ChatPromptTemplate.from_template(
+            """
+            You are an assistant summarizing llm results for the end users.\n
+            User Question:{question}\n
+            Raw Data:{db_result}\n
+            Final Answer:
+        """
+        )
+        chain = prompt | llm | parser
+        return await chain.ainvoke({"question": question, "db_result": db_result})
+    except Exception as e:
+        print("❌ Query execution error:", e)
+        traceback.print_exc()
 
 
 if __name__ == "__main__":

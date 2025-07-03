@@ -17,8 +17,8 @@ async def rag_cli():
     tool_config = load_tool_config("config/tool_config.yaml")
     client = MultiServerMCPClient(tool_config)
     tools = await client.get_tools()
-    tool_map = {getattr(t, "name", f"unnamed_{i}"): t for i, t in enumerate(tools)}
-    agents = build_agents(tools, tool_map)
+    tools_map = {getattr(t, "name", f"unnamed_{i}"): t for i, t in enumerate(tools)}
+    agents = build_agents(tools_map)
 
     print("\nType your question (or 'exit'):\n")
 
@@ -33,7 +33,7 @@ async def rag_cli():
         print("\nSelected Classifier ::: ", classifier)
 
         agent = agents.get(
-            f"{classifier}_agent", f"{ClassifierLabel.OTHER_TOOL.value}_agent"
+            f"{classifier}_agent", f"{ClassifierLabel.GENERAL_LLM.value}_agent"
         )
 
         response = await agent.ainvoke(

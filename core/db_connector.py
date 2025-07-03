@@ -50,6 +50,26 @@ def get_session():
         init_db_engine()
     return _session()
 
+def get_engine():
+    if _engine is None or _session is None:
+        init_db_engine()
+    return _engine()
+
+def get_db_schema_as_ddl() -> str:
+    if _engine is None:
+        init_db_engine()
+
+    try:
+        inspector = inspect(_engine)
+        ddl = ""
+        for table in inspector.get_table_names():
+            ddl += f"-- Table: {table}\n"
+            for column in inspector.get_columns(table):
+                ddl += f"  - {column['name']} {column['type']}\n"
+        return ddl
+    except SQLAlchemyError as e:
+        print("- ❌ DB Schema extraction failed:", e)
+        raise
 
 def get_db_schema():
     if _engine is None:
@@ -76,3 +96,15 @@ def get_db_schema():
     except SQLAlchemyError as e:
         print("- ❌ DB Schema extraction failed:", e)
         raise
+
+
+def format_schema(schema: dict) -> str:
+    lines = []
+    for table, cols in schema.items():
+        lines.append(f"Table: {table}")
+        for col in cols:
+            line = f"  - {col['name']} ({col['type']})"
+            if col.get("primary_key"):
+                line += " [PK]"
+            lines.append(line)
+    return "\n".join(lines)

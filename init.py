@@ -15,9 +15,9 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
 
-llm = ChatGroq(model="qwen-qwq-32b")
+# llm = ChatGroq(model="qwen-qwq-32b")
 # llm = ChatGroq(model="llama3-8b-8192")
-# llm = ChatGroq(model="llama-3.3-70b-versatile")
+llm = ChatGroq(model="llama-3.3-70b-versatile")
 # llm = ChatGroq(model="mistral-saba-24b")
 # llm = ChatCohere(
 #     model_name="xlarge",
@@ -28,11 +28,13 @@ llm = ChatGroq(model="qwen-qwq-32b")
 # embedding_model = CohereEmbeddings(
 #     cohere_api_key=COHERE_API_KEY, model="embed-english-light-v3.0"
 # )
+
 # embedding_model = OpenAIEmbeddings(
 #     model="text-embedding-3-small",
 #     # model="text-embedding-ada-002",
 #     chunk_size=1000
 # )
+
 embedding_model = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001",
 )

@@ -1,99 +1,77 @@
 from typing import Annotated
 from typing_extensions import TypedDict
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
-from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import AIMessage
 
 from core.enums.ToolName import ToolName
-from core.db_connector import get_db_schema
+from core.db_connector import get_db_schema_as_ddl
 from core.enums.ClassifierLabel import ClassifierLabel
 from init import llm
 
+parser = StrOutputParser()
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
+    schema: str
+    sql_query: str
+    db_result: str
 
+def build_agents(tools_map) -> dict:
 
-def build_agents(tools, tool_map) -> dict:
-
-    llm_with_tools = llm.bind_tools(tools)
-
-    # Node: Call vector_table_search : Dynamic table description selection
-    async def node_vector_table_search(state: State):
+    # Node: This Tool Node will call execute_sql_query tool
+    async def generate_sql_query(state: State):
+        schema = get_db_schema_as_ddl()
         question = state["messages"][-1].content
-        tool = tool_map[ToolName.VECTOR_TABLE_SEARCH.value]
-        output = await tool.ainvoke({"query": question, "top_k": 5})
-        return {"table_info": output, "messages": state["messages"]}
+        tool = tools_map[ToolName.GENERATE_SQL_QUERY.value]
+        sql_query = await tool.ainvoke({"schema": schema, "question": question})
+        return {"sql_query": sql_query, "schema": schema, "messages": state["messages"]}
 
-    # Node: Call generate_sql_query : Generate the SQL query
-    async def node_generate_sql_query(state: State):
+    # Node: This Tool Node will call execute_sql_query tool
+    async def node_execute_sql_query(state: State):
+        sql_query = state["sql_query"]
+        tool = tools_map[ToolName.EXECUTE_SQL_QUERY.value]
+        db_result = await tool.ainvoke({"sql_query": sql_query})
+        return {"db_result": db_result, "messages": state["messages"]}
+
+    # Node: This Tool Node will call rephrase_sql_result tool
+    async def node_rephrase_sql_result(state: State):
         question = state["messages"][-1].content
-        schema = get_db_schema()
-        table_info = state.get("table_info", [])
-        table_desc = "\n".join(table_info)
-        input_prompt = f"{schema}\n\n{table_desc}"
-        tool = tool_map[ToolName.GENERATE_SQL_QUERY.value]
-        output = await tool.ainvoke({"question": question, "schema": input_prompt})
-        return {"sql_query": output, "messages": state["messages"]}
+        db_result = state["db_result"]
+        tool = tools_map[ToolName.REPHRASE_SQL_RESULT.value]
+        final_answer = await tool.ainvoke(
+            {"question": question, "db_result": db_result}
+        )
+        new_messages = state["messages"] + [AIMessage(content=final_answer)]
+        return {"messages": new_messages}
 
-    # Node: Call query_database - Execute the SQL Query
-    async def node_query_database(state: State):
-        query = state.get("sql_query", "")
-        tool = tool_map[ToolName.QUERY_DATABASE.value]
-        output = await tool.ainvoke({"query": query})
-        final_response = str(output)
-        state["messages"].append({"role": "assistant", "content": final_response})
-        return {"messages": state["messages"]}
-
-    async def node_default_tool_call_llm(state: State):
-        response = await llm_with_tools.ainvoke(state["messages"])
+    # Node: This Tool Node will not call any tools
+    async def node_general_llm(state: State):
+        response = await llm.ainvoke(state["messages"])
         return {"messages": state["messages"] + [response]}
 
-    def build_db_search_graph():
+    def general_llm_graph():
         graph = StateGraph(State)
-        graph.add_node("node_default_tool_call_llm", node_default_tool_call_llm)
-        graph.add_node("node_vector_table_search", node_vector_table_search)
-        graph.add_node("node_generate_sql_query", node_generate_sql_query)
-        graph.add_node("node_query_database", node_query_database)
-        graph.set_entry_point("node_vector_table_search")
-        graph.add_edge("node_vector_table_search", "node_generate_sql_query")
-        graph.add_edge("node_generate_sql_query", "node_query_database")
-        graph.add_edge("node_query_database", "node_default_tool_call_llm")
-        graph.set_finish_point("node_default_tool_call_llm")
+        graph.add_node("node_general_llm", node_general_llm)
+        graph.set_entry_point("node_general_llm")
+        graph.set_finish_point("node_general_llm")
         return graph.compile()
 
-    def build_vector_search_graph():
+    def db_search_graph():
         graph = StateGraph(State)
-        graph.add_node("node_default_tool_call_llm", node_default_tool_call_llm)
-        graph.add_node("vector_knowledge_search",ToolNode([tool_map[ToolName.VECTOR_KNOWLEDGE_SEARCH.value]]),)
-        graph.set_entry_point("vector_knowledge_search")
-        graph.add_edge("vector_knowledge_search", "node_default_tool_call_llm")
-        graph.set_finish_point("node_default_tool_call_llm")
-        return graph.compile()
-
-    def build_general_llm_graph():
-        graph = StateGraph(State)
-        graph.add_node("node_default_tool_call_llm", node_default_tool_call_llm)
-        graph.add_node("tools", ToolNode(tools))
-        graph.add_edge(START, "node_default_tool_call_llm")
-        graph.add_conditional_edges("node_default_tool_call_llm", tools_condition)
-        graph.add_edge("tools", "node_default_tool_call_llm")
-        graph.set_finish_point("node_default_tool_call_llm")
-        return graph.compile()
-
-    def build_other_tool_graph():
-        graph = StateGraph(State)
-        graph.add_node("node_default_tool_call_llm", node_default_tool_call_llm)
-        graph.add_node("tools", ToolNode(tools))
-        graph.add_edge(START, "node_default_tool_call_llm")
-        graph.add_conditional_edges("node_default_tool_call_llm", tools_condition)
-        graph.add_edge("tools", "node_default_tool_call_llm")
-        graph.set_finish_point("node_default_tool_call_llm")
+        graph.add_node("generate_sql_query", node_generate_sql_query)
+        graph.add_node("execute_sql_query", node_execute_sql_query)
+        graph.add_node("rephrase_sql_result", node_rephrase_sql_result)
+        graph.set_entry_point("generate_sql_query")
+        graph.add_edge("generate_sql_query", "execute_sql_query")
+        graph.add_edge("execute_sql_query", "rephrase_sql_result")
+        graph.set_finish_point("rephrase_sql_result")
         return graph.compile()
 
     return {
-        f"{ClassifierLabel.DB_SEARCH.value}_agent": build_db_search_graph(),
-        f"{ClassifierLabel.VECTOR_SEARCH.value}_agent": build_vector_search_graph(),
-        f"{ClassifierLabel.GENERAL_LLM.value}_agent": build_general_llm_graph(),
-        f"{ClassifierLabel.OTHER_TOOL.value}_agent": build_other_tool_graph(),
+        f"{ClassifierLabel.GENERAL_LLM.value}_agent": general_llm_graph(),
+        f"{ClassifierLabel.DB_SEARCH.value}_agent": db_search_graph(),
+        # f"{ClassifierLabel.VECTOR_SEARCH.value}_agent": vector_search_graph(),
+        # f"{ClassifierLabel.OTHER_TOOL.value}_agent": other_tool_graph(),
     }

@@ -1,5 +1,5 @@
 import re
-from core.prompts.classifiers import get_classify_intent_prompt
+from core.prompts.classifiers import generate_prompt
 from core.enums.ClassifierLabel import ClassifierLabel
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
@@ -72,7 +72,7 @@ dynamic_few_shot_prompt = FewShotChatMessagePromptTemplate(
 
 
 async def question_classifier(question: str) -> str:
-    prompt = get_classify_intent_prompt(dynamic_few_shot_prompt).format_messages(
+    prompt = generate_prompt(dynamic_few_shot_prompt).format_messages(
         question=question
     )
     response = await llm.ainvoke(prompt)
@@ -85,11 +85,11 @@ async def question_classifier(question: str) -> str:
 
     if ClassifierLabel.DB_SEARCH.value in label:
         return ClassifierLabel.DB_SEARCH.value
-    elif ClassifierLabel.VECTOR_SEARCH.value in label:
-        return ClassifierLabel.VECTOR_SEARCH.value
+    # elif ClassifierLabel.VECTOR_SEARCH.value in label:
+    #     return ClassifierLabel.VECTOR_SEARCH.value
     # elif ClassifierLabel.INTERNET_SEARCH.value in label:
     #     return ClassifierLabel.INTERNET_SEARCH.value
-    elif ClassifierLabel.OTHER_TOOL.value in label:
-        return ClassifierLabel.OTHER_TOOL.value
+    # elif ClassifierLabel.OTHER_TOOL.value in label:
+    #     return ClassifierLabel.OTHER_TOOL.value
     else:
         return ClassifierLabel.GENERAL_LLM.value

@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate
 
 
-def get_classify_intent_prompt(dynamic_few_shot_prompt):
+def generate_prompt(dynamic_few_shot_prompt):
     return ChatPromptTemplate.from_messages(
         [
             (

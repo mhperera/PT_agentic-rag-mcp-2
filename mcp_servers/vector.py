@@ -1,17 +1,13 @@
 from fastmcp import FastMCP
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
-import os
+import traceback
 
 from init import embedding_model
 
 load_dotenv()
 
 VECTOR_STORE_PATH = "vector_db"
-
-cohere_api_key = os.getenv("COHERE_API_KEY")
-if cohere_api_key:
-    os.environ["COHERE_API_KEY"] = cohere_api_key
 
 mcp = FastMCP("Vector Server")
 
@@ -35,12 +31,12 @@ vectorstore_tables = FAISS.load_local(
     "Ideal for answering domain-specific or technical knowledge questions before deciding on other actions like SQL query generation.",
 )
 def vector_knowledge_search(query: str, top_k: int = 5) -> list:
-    print(f"🔍 Searching vector DB: {query}")
+    print(f"Searching vector DB: {query}")
     try:
         results = vectorstore.similarity_search(query, k=top_k)
         return [doc.page_content for doc in results]
     except Exception as e:
-        return [f"❌ Error during vector search: {str(e)}"]
+        return [f"❌ Error during vector knowledge search: {str(e)}"]
 
 
 @mcp.tool(
@@ -50,12 +46,24 @@ def vector_knowledge_search(query: str, top_k: int = 5) -> list:
     "about table names, column types, and relationships. Useful before generating SQL queries.",
 )
 def vector_table_search(query: str, top_k: int = 5) -> list:
-    print(f"🔍 Searching vector DB Tables: {query}")
+    print(f"Searching vector DB Tables: {query}")
     try:
-        results = vectorstore_tables.similarity_search(query, k=top_k)
-        return [doc.page_content for doc in results]
+        vs = FAISS.load_local(
+            "vector_db/table_info",
+            embedding_model,
+            allow_dangerous_deserialization=True,
+        )
+        res = vs.similarity_search(query, k=3)
+        print("Search Results :::: ", res)
+        return [doc.page_content for doc in res]
+
+        # results = vectorstore_tables.similarity_search(query, k=top_k)
+        # return [doc.page_content for doc in results]
     except Exception as e:
-        return [f"❌ Error during vector search: {str(e)}"]
+        print("ERROR:", str(e))
+        traceback.print_exc()
+        return [f"❌ Error during vector table search: {str(e)}"]
+        # return [f"❌ Error during vector table search: {str(e)}"]
 
 
 if __name__ == "__main__":
