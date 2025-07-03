@@ -8,12 +8,18 @@ This project implements a modular Agentic RAG application using multiple MCP too
 
 ## How to Run
 
+### Activate virtual environment
+
+```bash
+.venv\Scripts\activate
+```
+
 ### Start the MCP Tool Servers
 
 Run the following command to launch all necessary backend tool servers (SQL, vector DB, math, weather, etc.):
 
 ```bash
-uv start_servers.py
+uv run start_servers.py
 ```
 
 ### Start the MCP Tool Servers
@@ -21,5 +27,5 @@ uv start_servers.py
 Once the servers are up, run the client application:
 
 ```bash
-uv main.py
+uv run main.py
 ```
