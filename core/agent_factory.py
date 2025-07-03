@@ -122,9 +122,51 @@ def build_agents(tools_map) -> dict:
         graph.set_finish_point("rephrase_result")
         return graph.compile()
 
+    def internet_search_graph():
+        class State(TypedDict):
+            messages: Annotated[list, add_messages]
+
+        tools = [
+            tools_map[ToolName.BROWSE_TAVILY.value],
+        ]
+
+        llm_with_tools = llm.bind_tools(tools)
+
+        @traceable(name="Node: Prepare Tool Question")
+        async def node_prepare_question(state: State):
+            return {"messages": [llm_with_tools.invoke(state["messages"])]}
+
+        @traceable(name="Node: Rephrase Tool Result")
+        async def node_rephrase_result(state: State):
+            question = next(
+                (
+                    msg.content
+                    for msg in state["messages"]
+                    if isinstance(msg, HumanMessage)
+                ),
+                None,
+            )
+            result = state["messages"][-1].content
+            tool = tools_map[ToolName.REPHRASE_RESULT.value]
+            final_answer = await tool.ainvoke({"question": question, "result": result})
+            new_messages = state["messages"] + [AIMessage(content=final_answer)]
+            return {"messages": new_messages}
+
+        graph = StateGraph(State)
+        graph.add_node("prepare_question", node_prepare_question)
+        graph.add_node("tools", ToolNode(tools))
+        graph.add_node("rephrase_result", node_rephrase_result)
+        graph.set_entry_point("prepare_question")
+        graph.add_conditional_edges("prepare_question", tools_condition)
+        graph.add_conditional_edges("tools", tools_condition)
+        graph.add_edge("tools", "rephrase_result")
+        graph.set_finish_point("rephrase_result")
+        return graph.compile()
+
     return {
         f"{ClassifierLabel.GENERAL_LLM.value}_agent": general_llm_graph(),
         f"{ClassifierLabel.DB_SEARCH.value}_agent": db_search_graph(),
         f"{ClassifierLabel.OTHER_TOOL.value}_agent": other_tool_graph(),
+        f"{ClassifierLabel.INTERNET_SEARCH.value}_agent": internet_search_graph(),
         # f"{ClassifierLabel.VECTOR_SEARCH.value}_agent": vector_search_graph(),
     }

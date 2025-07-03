@@ -12,7 +12,7 @@ def generate_prompt(dynamic_few_shot_prompt):
                 "Given a user question, classify it into exactly one of the following categories:\n\n"
                 "1. db_search - Question requires SQL data from a database. Database is about sales, orders, customers, payments etc\n"
                 "2. vector_search - Question requires information from indexed documents. Specially about solar energy and Educational qualifications\n"
-                "3. internet_search - Question requires current or external web knowledge.\n"
+                "3. internet_search - Question needs current, real-time, or external world knowledge not available locally.\n"
                 "4. other_tool - Question is best handled by a non-LLM tool (like math calculator, weather).\n"
                 "5. general_llm - General reasoning or chit-chat.\n\n"
                 "**Respond with only the category label**, such as 'db_search' or 'other_tool' etc, and nothing else.\n"

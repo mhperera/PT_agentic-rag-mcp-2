@@ -10,7 +10,6 @@ BASE_URL = "https://api.weatherapi.com/v1/current.json"
 @mcp.tool(name="get_weather", description="Get the weather location")
 @traceable(name="Tool: Get Weather")
 async def get_weather(location: str) -> str:
-    print("WEATHER_API_KEY ::: ", WEATHER_API_KEY)
     params = {"key": WEATHER_API_KEY, "q": location, "aqi": "no"}
     headers = {"User-Agent": "MyWeatherApp/1.0 (contact@example.com)"}
     # return f"The weather in {location} is mostly sunny with light breeze"

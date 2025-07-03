@@ -20,6 +20,9 @@ TOOL_AGENT_MAP: dict[ClassifierLabel, list[ToolName]] = {
         ToolName.REPHRASE_RESULT,
     ],
     ClassifierLabel.GENERAL_LLM: [],
+    ClassifierLabel.INTERNET_SEARCH: [
+        ToolName.BROWSE_TAVILY,
+    ],
     # ClassifierLabel.VECTOR_SEARCH: [
     #     ToolName.VECTOR_KNOWLEDGE_SEARCH,
     # ],

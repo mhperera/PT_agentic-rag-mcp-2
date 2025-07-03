@@ -19,3 +19,7 @@ vector:
 rephrase:
   transport: streamable_http
   url: http://localhost:8003/mcp
+
+internet:
+  transport: streamable_http
+  url: http://localhost:8004/mcp

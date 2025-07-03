@@ -6,6 +6,7 @@ servers = [
     ("Vector", "python -m mcp_servers.vector"),
     ("Weather", "python -m mcp_servers.weather"),
     ("Rephrase", "python -m mcp_servers.rephrase"),
+    ("Internet", "python -m mcp_servers.internet"),
 ]
 
 print(f"🚀 Starting all MCP servers...")

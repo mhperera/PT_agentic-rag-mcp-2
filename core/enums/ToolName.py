@@ -8,9 +8,9 @@ class ToolName(Enum):
 
     GENERATE_SQL_QUERY = "generate_sql_query"
     EXECUTE_SQL_QUERY = "execute_sql_query"
-    REPHRASE_SQL_RESULT = "rephrase_sql_result"
 
     VECTOR_KNOWLEDGE_SEARCH = "vector_knowledge_search"
     VECTOR_TABLE_SEARCH = "vector_table_search"
 
     REPHRASE_RESULT = "rephrase_result"
+    BROWSE_TAVILY = "browse_tavily"
