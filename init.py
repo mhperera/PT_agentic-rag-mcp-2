@@ -16,8 +16,8 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 load_dotenv()
 
 # llm = ChatGroq(model="qwen-qwq-32b")
-# llm = ChatGroq(model="llama3-8b-8192")
-llm = ChatGroq(model="llama-3.3-70b-versatile")
+llm = ChatGroq(model="llama3-8b-8192")
+# llm = ChatGroq(model="llama-3.3-70b-versatile")
 # llm = ChatGroq(model="mistral-saba-24b")
 # llm = ChatCohere(
 #     model_name="xlarge",
