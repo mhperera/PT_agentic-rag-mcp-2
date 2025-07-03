@@ -1,4 +1,5 @@
 from fastmcp import FastMCP
+from langsmith import traceable
 
 mcp = FastMCP("Math Server")
 
@@ -7,6 +8,7 @@ mcp = FastMCP("Math Server")
     name="math_add",
     description="Adds two numbers and returns the result. Use this for simple or complex addition operations.",
 )
+@traceable(name="Tool: Add")
 def add(a: int, b: int) -> int:
     return a + b
 
@@ -15,6 +17,7 @@ def add(a: int, b: int) -> int:
     name="math_multiply",
     description="Multiplies two numbers and returns the result. Use for any arithmetic requiring product calculation.",
 )
+@traceable(name="Tool: Multiply")
 def multiply(a: int, b: int) -> int:
     return a * b
 
@@ -23,6 +26,7 @@ def multiply(a: int, b: int) -> int:
     name="math_divide",
     description="Divides the first number by the second and returns the result. Do not use if the second number is zero.",
 )
+@traceable(name="Tool: Divide")
 def divide(a: int, b: int) -> float:
     if b == 0:
         raise ValueError("Cannot divide by zero")

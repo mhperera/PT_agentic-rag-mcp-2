@@ -1,6 +1,7 @@
 from fastmcp import FastMCP
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langsmith import traceable
 from init import llm
 import traceback
 
@@ -13,6 +14,7 @@ mcp = FastMCP("Rephraser Server")
     name="rephrase_result",
     description="Given a user's question and the raw output from a tool, return a natural, human-friendly response that summarizes the result clearly.",
 )
+@traceable(name="Tool: Rephrase Result")
 async def rephrase_result(question: str, result: str) -> str:
     try:
         prompt = ChatPromptTemplate.from_template(

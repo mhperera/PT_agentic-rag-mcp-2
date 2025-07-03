@@ -4,6 +4,7 @@ from core.db_connector import get_session
 import traceback
 from sqlalchemy import text
 from langchain_core.output_parsers import StrOutputParser
+from langsmith import traceable
 from init import llm
 
 parser = StrOutputParser()
@@ -15,6 +16,7 @@ mcp = FastMCP("SQL Server")
     name="generate_sql_query",
     description="Given a user question, table description and the database schema, return a safe SQL SELECT query to answer it.",
 )
+@traceable(name="Tool: Generate SQL Query")
 async def generate_sql_query_(schema: str, question: str) -> str:
     """ "
     The LLM uses this tool to Generate SQL SELECT query based on the provided database schema and user question.
@@ -41,6 +43,7 @@ async def generate_sql_query_(schema: str, question: str) -> str:
     name="execute_sql_query",
     description="Execute given SQL queries on the database and and returns result string",
 )
+@traceable(name="Tool: Execute SQL Query")
 def execute_sql_query(sql_query: str) -> list:
     try:
         session = get_session()

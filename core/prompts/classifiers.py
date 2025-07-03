@@ -1,5 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
+from langsmith import traceable
 
+
+@traceable(name="Function: Generate Classification Prompt")
 def generate_prompt(dynamic_few_shot_prompt):
     return ChatPromptTemplate.from_messages(
         [

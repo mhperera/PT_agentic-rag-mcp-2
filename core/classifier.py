@@ -6,6 +6,7 @@ from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
 from langchain_core.prompts import FewShotChatMessagePromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
 from init import llm, embedding_model
+from langsmith import traceable
 
 examples = [
     # db_search
@@ -71,10 +72,9 @@ dynamic_few_shot_prompt = FewShotChatMessagePromptTemplate(
 )
 
 
+@traceable(name="Function: Question Classifier")
 async def question_classifier(question: str) -> str:
-    prompt = generate_prompt(dynamic_few_shot_prompt).format_messages(
-        question=question
-    )
+    prompt = generate_prompt(dynamic_few_shot_prompt).format_messages(question=question)
     response = await llm.ainvoke(prompt)
     label = response.content.strip().lower()
 

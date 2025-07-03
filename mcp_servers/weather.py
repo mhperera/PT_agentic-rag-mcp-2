@@ -1,9 +1,11 @@
 from fastmcp import FastMCP
+from langsmith import traceable
 
 mcp = FastMCP("Weather Server")
 
 
 @mcp.tool(name="get_weather", description="Get the weather location")
+@traceable(name="Tool: Get Weather")
 async def get_weather(location: str) -> str:
     return f"The weather in {location} is mostly sunny with light breeze"
 

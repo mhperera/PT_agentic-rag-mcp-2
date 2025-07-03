@@ -1,6 +1,7 @@
 from fastmcp import FastMCP
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
+from langsmith import traceable
 import traceback
 
 from init import embedding_model
@@ -30,6 +31,7 @@ vectorstore_tables = FAISS.load_local(
     "It includes content on solar energy, database concepts, and table schemas. "
     "Ideal for answering domain-specific or technical knowledge questions before deciding on other actions like SQL query generation.",
 )
+@traceable(name="Tool: Vector Knowledge Search")
 def vector_knowledge_search(query: str, top_k: int = 5) -> list:
     print(f"Searching vector DB: {query}")
     try:
@@ -45,6 +47,7 @@ def vector_knowledge_search(query: str, top_k: int = 5) -> list:
     "It performs semantic search over vectorized table descriptions to retrieve details "
     "about table names, column types, and relationships. Useful before generating SQL queries.",
 )
+@traceable(name="Tool: Vector Table Search")
 def vector_table_search(query: str, top_k: int = 5) -> list:
     print(f"Searching vector DB Tables: {query}")
     try:

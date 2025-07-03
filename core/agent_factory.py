@@ -3,7 +3,7 @@ from typing_extensions import TypedDict
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.prebuilt import ToolNode
 from langgraph.prebuilt import tools_condition
 
@@ -11,6 +11,7 @@ from core.enums.ToolName import ToolName
 from core.db_connector import get_db_schema_as_ddl
 from core.enums.ClassifierLabel import ClassifierLabel
 from init import llm
+from langsmith import traceable
 
 parser = StrOutputParser()
 
@@ -21,7 +22,7 @@ def build_agents(tools_map) -> dict:
         class State(TypedDict):
             messages: Annotated[list, add_messages]
 
-        # Node: This Tool Node will not call any tools
+        @traceable(name="Node: General LLM Response")
         async def node_general_llm(state: State):
             response = await llm.ainvoke(state["messages"])
             return {"messages": state["messages"] + [response]}
@@ -39,7 +40,7 @@ def build_agents(tools_map) -> dict:
             sql_query: str
             result: str
 
-        # Node: This Tool Node will call execute_sql_query tool
+        @traceable(name="Node: Generate SQL Query")
         async def node_generate_sql_query(state: State):
             schema = get_db_schema_as_ddl()
             question = state["messages"][-1].content
@@ -51,13 +52,14 @@ def build_agents(tools_map) -> dict:
                 "messages": state["messages"],
             }
 
-        # Node: This Tool Node will call execute_sql_query tool
+        @traceable(name="Node: Execute SQL Query")
         async def node_execute_sql_query(state: State):
             sql_query = state["sql_query"]
             tool = tools_map[ToolName.EXECUTE_SQL_QUERY.value]
             result = await tool.ainvoke({"sql_query": sql_query})
             return {"result": result, "messages": state["messages"]}
 
+        @traceable(name="Node: Rephrase SQL Result")
         async def node_rephrase_result(state: State):
             question = state["messages"][-1].content
             result = state["result"]
@@ -89,15 +91,23 @@ def build_agents(tools_map) -> dict:
 
         llm_with_tools = llm.bind_tools(tools)
 
+        @traceable(name="Node: Prepare Tool Question")
         async def node_prepare_question(state: State):
             return {"messages": [llm_with_tools.invoke(state["messages"])]}
 
+        @traceable(name="Node: Rephrase Tool Result")
         async def node_rephrase_result(state: State):
-            question = state["messages"][-1].content
-            tool = tools_map[ToolName.REPHRASE_RESULT.value]
-            final_answer = await tool.ainvoke(
-                {"question": question, "result": question}
+            question = next(
+                (
+                    msg.content
+                    for msg in state["messages"]
+                    if isinstance(msg, HumanMessage)
+                ),
+                None,
             )
+            result = state["messages"][-1].content
+            tool = tools_map[ToolName.REPHRASE_RESULT.value]
+            final_answer = await tool.ainvoke({"question": question, "result": result})
             new_messages = state["messages"] + [AIMessage(content=final_answer)]
             return {"messages": new_messages}
 
