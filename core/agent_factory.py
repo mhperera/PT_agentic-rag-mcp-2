@@ -15,7 +15,7 @@ from init import llm
 parser = StrOutputParser()
 
 
-def build_agents(tools_map, tools) -> dict:
+def build_agents(tools_map) -> dict:
 
     def general_llm_graph():
         class State(TypedDict):
@@ -84,12 +84,12 @@ def build_agents(tools_map, tools) -> dict:
             messages: Annotated[list, add_messages]
             result: str
 
-        # tools = [
-        #     tools_map[ToolName.MATH_ADD.value],
-        #     tools_map[ToolName.MATH_DIVIDE.value],
-        #     tools_map[ToolName.MATH_MULTIPLY.value],
-        #     tools_map[ToolName.GET_WEATHER.value],
-        # ]
+        tools = [
+            tools_map[ToolName.MATH_ADD.value],
+            tools_map[ToolName.MATH_DIVIDE.value],
+            tools_map[ToolName.MATH_MULTIPLY.value],
+            tools_map[ToolName.GET_WEATHER.value],
+        ]
 
         llm_with_tools = llm.bind_tools(tools)
 

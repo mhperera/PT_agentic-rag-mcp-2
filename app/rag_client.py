@@ -20,7 +20,7 @@ async def rag_cli():
     
     tools = await client.get_tools()
     tools_map = {getattr(t, "name", f"unnamed_{i}"): t for i, t in enumerate(tools)}
-    agents = build_agents(tools_map, tools)
+    agents = build_agents(tools_map)
 
     print("\nType your question (or 'exit'):\n")
 
